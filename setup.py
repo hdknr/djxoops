@@ -56,7 +56,7 @@ from setuptools import setup
 
 sys.path.insert(0, os.path.abspath('lib'))
 
-from ua import get_version
+from xoops import get_version
 
 SCRIPTS = glob.glob('scripts/*.py')
 
