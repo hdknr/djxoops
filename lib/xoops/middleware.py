@@ -21,8 +21,9 @@ class AuthMiddleware(object):
                 " 'django.contrib.auth.middleware.AuthenticationMiddleware'"
                 " before the XoopsAuthMiddleware class.")
 
-        if not FOLLOW and request.user.is_authenticated():
-            return
+        if request.user.is_authenticated():
+            if request.user.is_staff or request.user.is_superuser or not FOLLOW:
+                return
 
         try:
             sess_id = request.COOKIES[self.COOKIE_KEY]
