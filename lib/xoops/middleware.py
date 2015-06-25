@@ -4,7 +4,12 @@ from django.core.exceptions import ImproperlyConfigured
 
 from xoops.utils import create_user_from
 
+import logging
+import traceback
+logger = logging.getLogger()
+
 FOLLOW = getattr(settings, 'XOOPS_FOLLOW_LOGOFF', True)
+FOLLOW_ONLY_USERS =  getattr(settings, 'XOOPS_FOLLOW_ONLY_USERS', False)
 
 class AuthMiddleware(object):
 
@@ -22,7 +27,10 @@ class AuthMiddleware(object):
                 " before the XoopsAuthMiddleware class.")
 
         if request.user.is_authenticated():
-            if request.user.is_staff or request.user.is_superuser or not FOLLOW:
+            if request.user.is_staff or request.user.is_superuser:
+                if FOLLOW_ONLY_USERS:
+                    return
+            elif not FOLLOW:
                 return
 
         try:
@@ -33,6 +41,7 @@ class AuthMiddleware(object):
                 auth.login(request, user)
                 return
         except:
+            logger.debug(traceback.format_exc())
             pass
 
         if FOLLOW:
